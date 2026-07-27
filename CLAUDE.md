@@ -11,12 +11,26 @@ not by running a build.
 
 ## Structure
 
+Two conventions coexist in this repo:
+
 ```
 skills/
-  <skill-name>/
+  design-patterns/
+  unit-tests/
     SKILL.md              # required: frontmatter + instructions, loaded when the skill triggers
-    references/*.md       # optional: detail docs, loaded on demand by SKILL.md, not upfront
+    references/*.md       # optional: detail docs, in a references/ subfolder, loaded on demand
+  dotnet-skills/
+    <skill-name>/
+      SKILL.md             # frontmatter + instructions; adds a third field, `invocable: true|false`
+      *.md                 # optional extra detail docs, sibling files — NOT under a references/ subfolder
 ```
+
+`design-patterns` and `unit-tests` (the two general-purpose skills authored directly in this
+repo) strictly nest extra detail docs under `references/`. `dotnet-skills/` (vendored, see
+below) does not use a `references/` subfolder at all — where a skill needs more than one file,
+the extras sit as flat siblings of `SKILL.md` inside that skill's directory. Check which
+convention a given skill actually follows before assuming — don't generalize from one to write
+the other.
 
 Each `SKILL.md` starts with YAML frontmatter:
 
@@ -35,15 +49,26 @@ carries the full trigger surface: explicit ask phrasing, domain keywords, and sy
 might use instead of naming the skill outright. When editing a skill, keep the description in
 sync with any new triggers the body implies.
 
+`dotnet-skills/` frontmatter additionally carries `invocable: true|false` (inherited from
+upstream, not used by `design-patterns` or `unit-tests`). Most vendored skills are
+`invocable: false`; only `crap-analysis` and `slopwatch` are `true`. Verify against upstream
+before relying on a specific meaning for this field — it isn't documented in this repo.
+
 ## Two-tier content pattern
 
-Both existing skills split content the same way, and new skills should follow it:
+`design-patterns` and `unit-tests` split content the same way, and new general-purpose skills
+authored in this repo should follow it:
 
 - **`SKILL.md`** — the workflow/decision logic: modes or steps, when to do what, the checklist
   used to judge "done." Kept short enough to read in full every time the skill triggers.
 - **`references/*.md`** — heavier per-topic detail (pattern catalogs, annotated code examples,
   step-by-step procedures) that SKILL.md points to and Claude reads *on demand*, not upfront.
   This keeps the always-loaded SKILL.md lean while still allowing deep, example-rich material.
+
+This is not universal across the repo: most `dotnet-skills/` entries are a single `SKILL.md`
+with no reference tier at all, and the handful that do split content (e.g.
+`csharp-coding-standards`, `testcontainers`, `opentelementry-dotnet-instrumentation`) use flat
+sibling files rather than a `references/` subfolder. See `## skills/dotnet-skills/` below.
 
 ## Writing a skill that must generalize across repos
 
@@ -70,6 +95,30 @@ Follow this shape for any new skill whose concrete details (paths, tool names, v
 vary by the repo it's used in: teach the reusable pattern, point at how to discover the local
 specifics, keep concrete examples but mark them as the authoring repo's, and don't bake a
 single project's paths into instructions presented as universal.
+
+## `skills/dotnet-skills/`
+
+This subdirectory is a vendored, modified copy of the skill collection from
+[Aaronontheweb/dotnet-skills](https://github.com/Aaronontheweb/dotnet-skills). Credit for the
+original authoring goes there. Changes made when importing into this repo:
+
+- **Akka.NET-specific references removed** — the upstream skills were written against a
+  codebase that used Akka.NET; those examples/mentions were stripped so the skills read as
+  generic .NET guidance.
+- **NUnit instead of xUnit** — package examples, `Directory.Packages.props` snippets, and test
+  patterns default to NUnit (`Verify.NUnit`, `NUnit3TestAdapter`, etc.). xUnit only shows up as
+  an alternate package option in a couple of skills, not as the primary framework.
+
+Structurally these don't follow the `references/` two-tier pattern described above: most of
+the ~24 skills here are a single `SKILL.md` with no extra files, and the few with additional
+detail docs (`csharp-coding-standards`, `testcontainers`, `aspire-integration-testing`,
+`opentelementry-dotnet-instrumentation`, `microsoft-extensions-configuration`,
+`microsoft-extensions-dependency-injection`, `csharp-concurrency-patterns`) keep them as flat
+sibling `*.md` files rather than nesting under `references/`. These are narrower/deeper
+.NET-ecosystem topics (Aspire, EF Core, OpenTelemetry, TestContainers, csharp coding standards,
+etc.) rather than the general-purpose skills above. When updating them, keep changes consistent
+with the two attribution notes above — don't reintroduce xUnit as the default or Akka.NET-
+specific content without a reason to diverge from upstream again.
 
 ## Skill content conventions (from `design-patterns` and `unit-tests`)
 
