@@ -15,7 +15,22 @@ There's no application code here and nothing to build or test. Every file is Mar
 
 ## Installation
 
-Claude Code loads skills from a `skills/` directory — either per-project (`.claude/skills/`) or for your user across all projects (`~/.claude/skills/`).
+### Option 1: plugin marketplace + bootstrap-dotnet-skills (recommended)
+
+This repo is also a [Claude Code plugin marketplace](https://code.claude.com/docs/en/plugin-marketplaces) (see [`.claude-plugin/marketplace.json`](.claude-plugin/marketplace.json)), listing one plugin: the `bootstrap-dotnet-skills` installer. Adding the marketplace doesn't publish or submit anything anywhere — it just points your own Claude Code at this GitHub repo, so it's safe to use for personal/private setups.
+
+```
+/plugin marketplace add matrixx333/skills
+/plugin install bootstrap-dotnet-skills@matrixx333-skills
+```
+
+That installs *only* the installer skill (small, always-on token cost). From any project, invoke it (e.g. "bootstrap skills" or "install the .NET skills") to clone this repo, pick which skills to pull in with `--skills`/`--exclude`, and copy them into that project's `.claude/skills/` or your user-wide `~/.claude/skills/` — see [`bootstrap-dotnet-skills`](skills/bootstrap-dotnet-skills/SKILL.md) for details.
+
+Update later with `/plugin marketplace update matrixx333-skills`; remove with `/plugin uninstall bootstrap-dotnet-skills@matrixx333-skills`.
+
+### Option 2: manual copy
+
+Claude Code also loads skills from a plain `skills/` directory — either per-project (`.claude/skills/`) or for your user across all projects (`~/.claude/skills/`). Skip the plugin system entirely and copy files straight over:
 
 ```bash
 git clone https://github.com/matrixx333/skills.git

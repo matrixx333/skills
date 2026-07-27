@@ -1,0 +1,14 @@
+{
+  "name": "matrixx333-skills",
+  "owner": {
+    "name": "Jason Sellgren"
+  },
+  "description": "Personal marketplace for matrixx333/skills — install the bootstrap-dotnet-skills installer, which in turn pulls the rest of the collection into a target project or user scope.",
+  "plugins": [
+    {
+      "name": "bootstrap-dotnet-skills",
+      "source": "./skills/bootstrap-dotnet-skills",
+      "description": "Installer skill: clones this repo and copies the selected skills (design-patterns, unit-tests, dotnet-skills/*) into a target project's or user's Claude Code skills scope, then writes a routing block into CLAUDE.md."
+    }
+  ]
+}
