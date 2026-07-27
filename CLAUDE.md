@@ -11,7 +11,7 @@ not by running a build.
 
 ## Structure
 
-Two conventions coexist in this repo:
+Three conventions coexist in this repo:
 
 ```
 skills/
@@ -23,14 +23,21 @@ skills/
     <skill-name>/
       SKILL.md             # frontmatter + instructions; adds a third field, `invocable: true|false`
       *.md                 # optional extra detail docs, sibling files — NOT under a references/ subfolder
+  bootstrap-dotnet-skills/
+    SKILL.md               # frontmatter + instructions, same shape as design-patterns/unit-tests
+    scripts/*.sh            # the deterministic half of the skill — clone/discover/filter/copy/lockfile
+    references/*.md         # on-demand detail docs, same references/ convention as design-patterns/unit-tests
 ```
 
 `design-patterns` and `unit-tests` (the two general-purpose skills authored directly in this
 repo) strictly nest extra detail docs under `references/`. `dotnet-skills/` (vendored, see
 below) does not use a `references/` subfolder at all — where a skill needs more than one file,
-the extras sit as flat siblings of `SKILL.md` inside that skill's directory. Check which
-convention a given skill actually follows before assuming — don't generalize from one to write
-the other.
+the extras sit as flat siblings of `SKILL.md` inside that skill's directory.
+`bootstrap-dotnet-skills` (see `## skills/bootstrap-dotnet-skills/` below) follows the
+`references/` convention like `design-patterns`/`unit-tests`, but additionally has a
+`scripts/` folder — it's an operational tool skill, not just reference documentation. Check
+which convention a given skill actually follows before assuming — don't generalize from one to
+write the other.
 
 Each `SKILL.md` starts with YAML frontmatter:
 
@@ -119,6 +126,25 @@ sibling `*.md` files rather than nesting under `references/`. These are narrower
 etc.) rather than the general-purpose skills above. When updating them, keep changes consistent
 with the two attribution notes above — don't reintroduce xUnit as the default or Akka.NET-
 specific content without a reason to diverge from upstream again.
+
+## `skills/bootstrap-dotnet-skills/`
+
+An operational installer skill, not reference documentation: it clones this repo (or another
+`--repo`), auto-discovers every skill by walking `skills/**/SKILL.md` — which finds both
+root-level skills (`design-patterns`, `unit-tests`) and nested ones
+(`dotnet-skills/testcontainers`, etc.) without anything needing to declare where each one
+lives — and copies the selected set flat into a target `--scope` (`~/.claude/skills` or a
+project's `.claude/skills/`). It then writes the `.NET skill routing` block into the invoking
+project's `CLAUDE.md`.
+
+It is meant to be **run from a different, target project** — the mechanism a .NET project uses
+to pull this repo's skills in — not to modify this repo's own `CLAUDE.md`. There is no `config/`
+manifest and no content-conversion "rules" step: earlier versions of this skill (in the repo it
+was moved from) bridged two different, unconverted upstream repos and had to rewrite xUnit to
+NUnit and strip Akka.NET on every install. That's no longer needed here, since every skill this
+tool installs already lives in this one repo, already converted (see the vendoring notes above)
+— so the tool's whole job collapses to discover, filter (`--skills`/`--exclude`), copy, and
+write the routing block.
 
 ## Skill content conventions (from `design-patterns` and `unit-tests`)
 
