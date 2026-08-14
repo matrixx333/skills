@@ -10,27 +10,10 @@ There's no application code here and nothing to build or test. Every file is Mar
 | --- | --- |
 | [`design-patterns`](skills/design-patterns/SKILL.md) | Explains, implements, suggests, or reviews any of the 23 GoF design patterns, language-agnostic. Triggers on pattern names (Singleton, Observer, Factory, Decorator, ...) or a described design problem, not just the phrase "design pattern". |
 | [`unit-tests`](skills/unit-tests/SKILL.md) | Writes or refactors C#/.NET unit tests to 100% line/branch/method coverage, using whatever fluent builders, test harnesses, framework, and assertion library the target repo already has. Discovers those conventions at runtime instead of assuming one project's setup. |
-| [`dotnet-skills/`](skills/dotnet-skills/) | ~24 vendored .NET-ecosystem skills (Aspire, EF Core, OpenTelemetry, TestContainers, csharp coding standards, and more) from [Aaronontheweb/dotnet-skills](https://github.com/Aaronontheweb/dotnet-skills), modified for this repo (Akka.NET references removed, NUnit instead of xUnit). See [`CLAUDE.md`](CLAUDE.md) for details. |
-| [`bootstrap-dotnet-skills`](skills/bootstrap-dotnet-skills/SKILL.md) | Installs the skills in this repo (or a `--skills` subset) into a target project's or user's Claude Code skills scope, and writes a `.NET skill routing` block into that project's `CLAUDE.md`. Run from a *different* target project, not from this repo. |
 
 ## Installation
 
-### Option 1: plugin marketplace + bootstrap-dotnet-skills (recommended)
-
-This repo is also a [Claude Code plugin marketplace](https://code.claude.com/docs/en/plugin-marketplaces) (see [`.claude-plugin/marketplace.json`](.claude-plugin/marketplace.json)), listing one plugin: the `bootstrap-dotnet-skills` installer. Adding the marketplace doesn't publish or submit anything anywhere — it just points your own Claude Code at this GitHub repo, so it's safe to use for personal/private setups.
-
-```
-/plugin marketplace add matrixx333/skills
-/plugin install bootstrap-dotnet-skills@matrixx333-skills
-```
-
-That installs *only* the installer skill (small, always-on token cost). From any project, invoke it (e.g. "bootstrap skills" or "install the .NET skills") to clone this repo, pick which skills to pull in with `--skills`/`--exclude`, and copy them into that project's `.claude/skills/` or your user-wide `~/.claude/skills/` — see [`bootstrap-dotnet-skills`](skills/bootstrap-dotnet-skills/SKILL.md) for details.
-
-Update later with `/plugin marketplace update matrixx333-skills`; remove with `/plugin uninstall bootstrap-dotnet-skills@matrixx333-skills`.
-
-### Option 2: manual copy
-
-Claude Code also loads skills from a plain `skills/` directory — either per-project (`.claude/skills/`) or for your user across all projects (`~/.claude/skills/`). Skip the plugin system entirely and copy files straight over:
+Claude Code loads skills from a `skills/` directory — either per-project (`.claude/skills/`) or for your user across all projects (`~/.claude/skills/`).
 
 ```bash
 git clone https://github.com/matrixx333/skills.git
@@ -48,17 +31,9 @@ skills/
   unit-tests/
     SKILL.md              # required: frontmatter + instructions, loaded when the skill triggers
     references/*.md       # optional: detail docs, in a references/ subfolder, loaded on demand
-  dotnet-skills/
-    <skill-name>/
-      SKILL.md            # frontmatter (adds a third field, invocable: true|false) + instructions
-      *.md                # optional extra detail docs as flat siblings — no references/ subfolder
-  bootstrap-dotnet-skills/
-    SKILL.md              # an operational tool skill rather than reference documentation
-    scripts/*.sh          # the deterministic half: clone, discover, filter, copy, lockfile
-    references/*.md       # same on-demand-detail convention as design-patterns/unit-tests
 ```
 
-`SKILL.md` stays short enough to read in full every time it triggers — modes or steps, not prose, plus a closing checklist Claude can self-check against. In `design-patterns` and `unit-tests`, anything heavier (pattern catalogs, annotated examples, step-by-step procedures) lives in `references/*.md`. Most of `dotnet-skills/` is single-file with no reference tier at all; the few multi-file skills there keep extras as flat siblings rather than a `references/` subfolder. `bootstrap-dotnet-skills` is a third shape again: it drives a real script rather than just teaching a pattern. See [`CLAUDE.md`](CLAUDE.md) for the full breakdown.
+`SKILL.md` stays short enough to read in full every time it triggers — modes or steps, not prose, plus a closing checklist Claude can self-check against. Anything heavier (pattern catalogs, annotated examples, step-by-step procedures) lives in `references/*.md`, loaded on demand instead of upfront.
 
 ## Writing a new skill
 
